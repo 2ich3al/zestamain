@@ -38,7 +38,9 @@ export default function Home() {
       <h1 className="text-5xl font-black mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
         Zesta
       </h1>
-      <p className="text-gray-400 mb-12 text-lg">Buy. Chat. Pay. All in one.</p>
+      <p className="text-gray-400 mb-20 text-lg text-center max-w-xs">
+        Buy. Chat. Pay. All in one.
+      </p>
 
       <div className="glass rounded-3xl p-8 w-full max-w-sm shadow-2xl">
         <div className="flex items-center bg-white/10 rounded-2xl mb-6">
