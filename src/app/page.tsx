@@ -1,56 +1,61 @@
-'use client'
+"use client";
 
-import Image from "next/image"
-import { useState } from "react"
-import { supabase } from "@/lib/supabase"
+import Image from "next/image";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Home() {
-  const [phone, setPhone] = useState("")
-  const [otp, setOtp] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [step, setStep] = useState<"phone" | "otp">("phone")
+  const [phone, setPhone] = useState("");
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<"phone" | "otp">("phone");
 
   const sendOTP = async () => {
-    if (!phone || phone.length < 10) return alert("Enter valid number")
-    setLoading(true)
+    if (!phone || phone.length < 10) return alert("Enter valid number");
+    setLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       phone: "+234" + phone.replace(/^0/, ""),
-    })
-    setLoading(false)
-    if (error) alert(error.message)
-    else {
-      setStep("")
-      alert("OTP sent! Check SMS")
+    });
+    setLoading(false);
+    if (error) {
+      alert(error.message);
+    } else {
+      setStep("otp"); // ← THIS WAS MISSING BEFORE
+      alert("OTP sent! Check SMS");
     }
-  }
+  };
 
   const verifyOTP = async () => {
-    if (otp.length !== 6) return alert("Enter 6-digit code")
-    setLoading(true)
-    const { error, data } = await supabase.auth.verifyOtp({
+    if (otp.length !== 6) return alert("Enter 6-digit code");
+    setLoading(true);
+    const { data, error } = await supabase.auth.verifyOtp({
       phone: "+234" + phone.replace(/^0/, ""),
       token: otp,
       type: "sms",
-    })
-    setLoading(false)
-    if (error) alert(error.message)
-    else {
-      alert("Welcome to Zesta! You’re now logged in 🔥")
-      // Here we’ll go to the real home feed next time
-      console.log("Logged in user:", data.user)
-    }
-  }
+    });
+    setLoading(false);
+    if (error) alert(error.message);
+    else alert("Welcome to Zesta! You’re logged in 🔥");
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center px-6">
-      <Image src="/logo.svg" alt="Zesta" width={140} height={140} className="mb-12 drop-shadow-2xl" />
+      <Image
+        src="/logo.svg"
+        alt="Zesta"
+        width={140}
+        height={140}
+        className="mb-12 drop-shadow-2xl"
+      />
 
       {step === "phone" ? (
         <>
           <h1 className="text-5xl font-black mb-3 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             Zesta
           </h1>
-          <p className="text-gray-300 mb-10 text-center">Buy. Chat. Pay. All in one.</p>
+          <p className="text-gray-300 mb-10 text-center">
+            Buy. Chat. Pay. All in one.
+          </p>
 
           <div className="glass rounded-3xl p-8 w-full max-w-sm shadow-2xl">
             <div className="flex items-center bg-white/10 rounded-2xl mb-6">
@@ -65,7 +70,7 @@ export default function Home() {
             </div>
             <button
               onClick={sendOTP}
-              disabled={loading={loading}
+              disabled={loading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-5 rounded-2xl font-bold text-lg shadow-xl hover:scale-105 transition"
             >
               {loading ? "Sending…" : "Get Started"}
@@ -79,7 +84,7 @@ export default function Home() {
             type="text"
             placeholder="483921"
             value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
             className="text-center text-4xl tracking-widest bg-white/10 rounded-2xl py-6 px-8 mb-8 w-full max-w-xs"
             maxLength={6}
           />
@@ -93,9 +98,7 @@ export default function Home() {
         </>
       )}
 
-      <p className="absolute bottom-8 text-sm text-gray-500">
-        Add to Home Screen • Zesta 2025
-      </p>
+      <p className="absolute bottom-8 text-sm text-gray-500">Zesta • 2025</p>
     </div>
-  )
+  );
 }
