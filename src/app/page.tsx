@@ -104,7 +104,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Flash Sale - Real Products */}
+      {/* Flash Sale - Real Products (NORMAL IMG = 100% WORKS) */}
       <div className="mt-8 px-4">
         <h2 className="text-2xl font-black mb-4 flex items-center gap-3">
           <span className="text-red-500 animate-pulse">Flash Sale</span>
@@ -117,13 +117,14 @@ export default function Home() {
             <p className="text-gray-500">Loading hot deals...</p>
           ) : (
             products.map((product) => (
-              <div key={product.id} className="glass rounded-2xl p-4 min-w-48">
-                <Image
+              <div
+                key={product.id}
+                className="glass rounded-2xl p-4 min-w-48 flex-shrink-0"
+              >
+                <img
                   src={product.image}
                   alt={product.name}
-                  width={200}
-                  height={200}
-                  className="rounded-xl mb-3 object-cover"
+                  className="w-full h-48 object-cover rounded-xl mb-3"
                 />
                 <p className="font-bold text-sm line-clamp-2">{product.name}</p>
                 <p className="text-2xl font-black text-pink-400">
