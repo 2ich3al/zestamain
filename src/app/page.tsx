@@ -13,18 +13,18 @@ interface Product {
   image: string;
 }
 
-const [products, setProducts] = useState<Product[]>([]);
-
-useEffect(() => {
-  supabase
-    .from("products")
-    .select("*")
-    .then(({ data }) => {
-      setProducts(data || []);
-    });
-}, []);
-
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("products")
+      .select("*")
+      .then(({ data }) => {
+        setProducts(data || []);
+      });
+  }, []);
+
   const categories = [
     "Fashion",
     "Phones",
@@ -35,7 +35,6 @@ export default function Home() {
     "Toys",
     "Groceries",
   ];
-  const flashSales = [1, 2, 3, 4];
 
   return (
     <div className="min-h-screen bg-black text-white pb-20">
@@ -49,6 +48,7 @@ export default function Home() {
           <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full" />
         </div>
       </div>
+
       {/* Search Bar */}
       <div className="px-4 mt-4">
         <div className="glass rounded-2xl px-5 py-4 flex items-center gap-3">
@@ -71,7 +71,6 @@ export default function Home() {
             </div>
             <p className="text-xs mt-1 text-gray-400">Your Story</p>
           </div>
-
           {[
             "50% OFF",
             "Free Delivery",
@@ -105,7 +104,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Flash Sale */}
+      {/* Flash Sale - Real Products */}
       <div className="mt-8 px-4">
         <h2 className="text-2xl font-black mb-4 flex items-center gap-3">
           <span className="text-red-500 animate-pulse">Flash Sale</span>
@@ -114,26 +113,30 @@ export default function Home() {
           </span>
         </h2>
         <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-          {products.map((product) => (
-            <div key={product.id} className="glass rounded-2xl p-4 min-w-48">
-              <Image
-                src={product.image}
-                alt={product.name}
-                width={200}
-                height={200}
-                className="rounded-xl mb-3 object-cover"
-              />
-              <p className="font-bold text-sm line-clamp-2">{product.name}</p>
-              <p className="text-2xl font-black text-pink-400">
-                ₦{product.price.toLocaleString()}
-              </p>
-              {product.old_price && (
-                <p className="text-sm line-through text-gray-500">
-                  ₦{product.old_price.toLocaleString()}
+          {products.length === 0 ? (
+            <p className="text-gray-500">Loading hot deals...</p>
+          ) : (
+            products.map((product) => (
+              <div key={product.id} className="glass rounded-2xl p-4 min-w-48">
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  width={200}
+                  height={200}
+                  className="rounded-xl mb-3 object-cover"
+                />
+                <p className="font-bold text-sm line-clamp-2">{product.name}</p>
+                <p className="text-2xl font-black text-pink-400">
+                  ₦{product.price.toLocaleString()}
                 </p>
-              )}
-            </div>
-          ))}
+                {product.old_price && (
+                  <p className="text-sm line-through text-gray-500">
+                    ₦{product.old_price.toLocaleString()}
+                  </p>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </div>
 
