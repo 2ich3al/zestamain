@@ -28,7 +28,6 @@ export default function Home() {
           <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full" />
         </div>
       </div>
-
       {/* Search Bar */}
       <div className="px-4 mt-4">
         <div className="glass rounded-2xl px-5 py-4 flex items-center gap-3">
@@ -39,7 +38,37 @@ export default function Home() {
           />
         </div>
       </div>
+      ```tsx
+      {/* Stories */}
+      <div className="px-4 mt-6">
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+          <div className="flex flex-col items-center min-w-fit">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 p-0.5">
+              <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
+                <span className="text-2xl">+</span>
+              </div>
+            </div>
+            <p className="text-xs mt-1 text-gray-400">Your Story</p>
+          </div>
 
+          {[
+            "50% OFF",
+            "Free Delivery",
+            "₦5k Flash",
+            "iPhone Deal",
+            "Jumia Killer",
+          ].map((story, i) => (
+            <div key={i} className="flex flex-col items-center min-w-fit">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 animate-pulse">
+                <div className="w-full h-full rounded-full bg-black flex items-center justify-center">
+                  <span className="text-xl font-bold">{i + 1}</span>
+                </div>
+              </div>
+              <p className="text-xs mt-1 max-w-16 text-center">{story}</p>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* Categories */}
       <div className="px-4 mt-6">
         <div className="flex gap-4 overflow-x-auto scrollbar-hide">
@@ -53,7 +82,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-
       {/* Flash Sale */}
       <div className="mt-8 px-4">
         <h2 className="text-2xl font-black mb-4 flex items-center gap-3">
@@ -73,7 +101,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 glass backdrop-blur-2xl border-t border-white/10">
         <div className="flex justify-around items-center py-3">
