@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Search, ShoppingBag, MessageCircle, User } from "lucide-react";
+import {
+  Search,
+  ShoppingBag,
+  MessageCircle,
+  User,
+  Send,
+  Mic,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
@@ -15,6 +22,10 @@ interface Product {
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [activeTab, setActiveTab] = useState("home");
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     supabase
@@ -24,6 +35,59 @@ export default function Home() {
         setProducts(data || []);
       });
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "chat") {
+      // Fetch messages (for now, fake some)
+      setMessages([
+        {
+          id: 1,
+          sender: "Seller",
+          message: "Hi! This iPhone is brand new. Ready to ship today.",
+          time: "10:30",
+        },
+        {
+          id: 2,
+          sender: "You",
+          message: "What's the warranty?",
+          time: "10:32",
+        },
+      ]);
+
+      // Real-time subscription (add tomorrow)
+      const channel = supabase
+        .channel("messages")
+        .on(
+          "postgres_changes",
+          { event: "*", schema: "public", table: "messages" },
+          () => {
+            // Reload messages
+          }
+        )
+        .subscribe();
+      return () => supabase.removeChannel(channel);
+    }
+  }, [activeTab]);
+
+  const sendMessage = async () => {
+    if (!newMessage.trim()) return;
+    setLoading(true);
+    // Send to Supabase (add tomorrow)
+    setMessages([
+      ...messages,
+      {
+        id: Date.now(),
+        sender: "You",
+        message: newMessage,
+        time: new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      },
+    ]);
+    setNewMessage("");
+    setLoading(false);
+  };
 
   const categories = [
     "Fashion",
@@ -35,6 +99,84 @@ export default function Home() {
     "Toys",
     "Groceries",
   ];
+
+  if (activeTab === "chat") {
+    return (
+      <div className="min-h-screen bg-black text-white pb-20">
+        {/* Header */}
+        <div className="glass backdrop-blur-xl sticky top-0 z-50 border-b border-white/10 p-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setActiveTab("home")}
+              className="text-gray-400"
+            >
+              ← Back
+            </button>
+            <Image src="/logo.svg" alt="Zesta" width={40} height={40} />
+            <h1 className="text-xl font-bold">Chat with Seller</h1>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex ${
+                msg.sender === "You" ? "justify-end" : "justify-start"
+              }`}
+            >
+              <div
+                className={`glass rounded-2xl px-4 py-2 max-w-xs ${
+                  msg.sender === "You" ? "bg-purple-600" : "bg-white/10"
+                }`}
+              >
+                <p className="text-sm">{msg.message}</p>
+                <p className="text-xs text-gray-400 mt-1">{msg.time}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Input */}
+        <div className="glass p-4 border-t border-white/10">
+          <div className="flex items-center gap-3">
+            <input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type a message..."
+              className="bg-transparent flex-1 outline-none text-lg"
+              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl">
+              <Send className="w-5 h-5" />
+            </button>
+            <button className="p-3 glass rounded-2xl">
+              <Mic className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Nav */}
+        <div className="fixed bottom-0 left-0 right-0 glass backdrop-blur-2xl border-t border-white/10">
+          <div className="flex justify-around items-center py-3">
+            <button onClick={() => setActiveTab("home")} className="p-3">
+              <ShoppingBag className="w-7 h-7" />
+            </button>
+            <button
+              onClick={() => setActiveTab("chat")}
+              className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl"
+            >
+              <MessageCircle className="w-7 h-7" />
+            </button>
+            <button className="p-3">
+              <User className="w-7 h-7" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white pb-20">
@@ -104,7 +246,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Flash Sale - Real Products (NORMAL IMG = 100% WORKS) */}
+      {/* Flash Sale - Real Products */}
       <div className="mt-8 px-4">
         <h2 className="text-2xl font-black mb-4 flex items-center gap-3">
           <span className="text-red-500 animate-pulse">Flash Sale</span>
@@ -124,7 +266,7 @@ export default function Home() {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-36 object-cover rounded-xl mb-3"
+                  className="w-full max-w-full h-32 object-cover rounded-xl mb-3 border border-white/10"
                 />
                 <p className="font-bold text-sm line-clamp-2">{product.name}</p>
                 <p className="text-2xl font-black text-pink-400">
@@ -144,10 +286,13 @@ export default function Home() {
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 glass backdrop-blur-2xl border-t border-white/10">
         <div className="flex justify-around items-center py-3">
-          <button className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl">
+          <button onClick={() => setActiveTab("home")} className="p-3">
             <ShoppingBag className="w-7 h-7" />
           </button>
-          <button className="p-3">
+          <button
+            onClick={() => setActiveTab("chat")}
+            className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl"
+          >
             <MessageCircle className="w-7 h-7" />
           </button>
           <button className="p-3">
