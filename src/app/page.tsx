@@ -168,7 +168,7 @@ export default function Home() {
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-24 object-cover rounded-xl mb-3 border border-white/10"
+                      className="w-full h-16 object-cover rounded-lg mb-2 border border-white/10"
                     />
                     <p className="font-bold text-sm line-clamp-2">
                       {product.name}
